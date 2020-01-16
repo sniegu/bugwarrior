@@ -66,6 +66,7 @@ class JiraIssue(Issue):
     CREATED_AT = 'jiracreatedts'
     STATUS = 'jirastatus'
     SUBTASKS = 'jirasubtasks'
+    STORY_POINTS = 'jirastorypoints'
 
     UDAS = {
         ISSUE_TYPE: {
@@ -108,6 +109,10 @@ class JiraIssue(Issue):
             'type': 'string',
             'label': "Jira Subtasks"
         },
+        STORY_POINTS: {
+            'type': 'numeric',
+            'label': "Jira Story Points"
+        },
     }
     UNIQUE_KEY = (URL, )
 
@@ -142,6 +147,7 @@ class JiraIssue(Issue):
             self.FIX_VERSION: self.get_fix_version(),
             self.STATUS: self.get_status(),
             self.SUBTASKS: self.get_subtasks(),
+            self.STORY_POINTS: self.get_story_points(),
         }
 
     def get_entry(self):
@@ -228,6 +234,12 @@ class JiraIssue(Issue):
             return self.record['fields']['timeestimate']['value']
         try:
             return self.record['fields']['timeestimate'] / 60 / 60
+        except (TypeError, KeyError):
+            return None
+
+    def get_story_points(self):
+        try:
+            return self.record['fields']['customfield_10106']
         except (TypeError, KeyError):
             return None
 
